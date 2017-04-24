@@ -21,6 +21,12 @@ text {
 
 </style>
 <body>
+<div class="infobox">
+  <h3 class="title">Book Title</h3>
+  <h4 class="author">Book Author</h4>
+  <p>Published in: <strong class="published">year</strong></p>
+  <p>Word count: <strong class="words">published</strong></p>
+</div>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script>
 
@@ -58,6 +64,11 @@ var links = [
 
 var nodes = {};
 
+nodes["uid1"] = {name: "title A", authors:"Mike, Jon", citations:11}
+nodes["uid2"] = {name: "title B", authors:"Steve, Al", citations:4}
+nodes["uid3"] = {name: "title C", authors:"Joe, Greg", citations:1}
+nodes["uid4"] = {name: "title D", authors:"Bob, Pete", citations:7}
+
 // Compute the distinct nodes from the links.
 links.forEach(function(link) {
   link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
@@ -94,7 +105,7 @@ var node = svg.selectAll(".node")
     .call(force.drag);
 
 node.append("circle")
-    .attr("r", 8);
+    .attr("r", circle_off);
 
 node.append("text")
     .attr("x", 12)
@@ -112,16 +123,28 @@ function tick() {
       .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 }
 
-function mouseover() {
+function mouseover(d,i) {
   d3.select(this).select("circle").transition()
       .duration(750)
-      .attr("r", 16);
+      .attr("r", circle_on);
+
+  d3.select(".infobox .title").text(d.name);
+  d3.select(".infobox .author").text(d.authors);
+  d3.select(".infobox .published").text("none")
 }
 
 function mouseout() {
   d3.select(this).select("circle").transition()
       .duration(750)
-      .attr("r", 8);
+      .attr("r", circle_off);
+}
+
+function circle_on(d) {
+  return 16 + 2*d.citations;
+}
+
+function circle_off(d) {
+  return 8 + d.citations;
 }
 
 </script>
