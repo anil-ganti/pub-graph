@@ -21,7 +21,7 @@ text {
 
 </style>
 <body>
-<div class="infobox">
+<div class="infobox" style="visibility: hidden;">
   <h3 class="title">Book Title</h3>
   <h4 class="author">Book Author</h4>
   <p>Published in: <strong class="published">year</strong></p>
@@ -127,13 +127,14 @@ function mouseover(d,i) {
   d3.select(this).select("circle").transition()
       .duration(750)
       .attr("r", circle_on);
-
+  d3.select(".infobox").style('visibility', 'visible');
   d3.select(".infobox .title").text(d.name);
   d3.select(".infobox .author").text(d.authors);
   d3.select(".infobox .published").text("none")
 }
 
 function mouseout() {
+  d3.select(".infobox").style('visibility', 'hidden');
   d3.select(this).select("circle").transition()
       .duration(750)
       .attr("r", circle_off);
