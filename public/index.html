@@ -22,10 +22,13 @@ text {
 </style>
 <body>
 <div class="infobox" style="visibility: hidden;">
-  <h3 class="title">Book Title</h3>
-  <h4 class="author">Book Author</h4>
-  <p>Published in: <strong class="published">year</strong></p>
-  <p>Word count: <strong class="words">published</strong></p>
+  <h3 class="title">Title</h3>
+  <h4 class="author">Authors</h4>
+  <p class="published">Published:</p>
+  <p class="journal">Journal:</p>
+  <p class="citations">Citations:</p>
+  <h5>Abstract:</h5>
+  <p class="abstract">Abstract:</p>
 </div>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script>
@@ -64,10 +67,14 @@ var links = [
 
 var nodes = {};
 
-nodes["uid1"] = {name: "title A", authors:"Mike, Jon", citations:11}
-nodes["uid2"] = {name: "title B", authors:"Steve, Al", citations:4}
-nodes["uid3"] = {name: "title C", authors:"Joe, Greg", citations:1}
-nodes["uid4"] = {name: "title D", authors:"Bob, Pete", citations:7}
+nodes["uid1"] = {name: "title A", authors:"Mike, Jon", citations:11,   abstract: "This is my super long abstract. There are lots of words here"}
+nodes["uid2"] = {name: "title B", authors:"Steve, Al", citations:4,   abstract: "This is my super long abstract. There are lots of words here"}
+nodes["uid3"] = {name: "title C", authors:"Joe, Greg", citations:1,   abstract: "This is my super long abstract. There are lots of words here"}
+nodes["uid4"] = {
+  name: "title D",
+  authors:"Bob, Pete",
+  citations:7,
+  abstract: "This is my super long abstract. There are lots of words here"}
 
 // Compute the distinct nodes from the links.
 links.forEach(function(link) {
@@ -130,7 +137,7 @@ function mouseover(d,i) {
   d3.select(".infobox").style('visibility', 'visible');
   d3.select(".infobox .title").text(d.name);
   d3.select(".infobox .author").text(d.authors);
-  d3.select(".infobox .published").text("none")
+  d3.select(".infobox .abstract").text(d.abstract)
 }
 
 function mouseout() {
