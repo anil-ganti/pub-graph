@@ -21,6 +21,20 @@ text {
 
 </style>
 <body>
+<div>
+<label>Session ID</label>
+<input type="text" id="sessionid" placeholder="Session ID">
+<button id="btn1">Get session</button>
+</div>
+
+<form action="/session" method="get">
+<div>
+<label>Session ID</label>
+<input type="text" name="id" placeholder="Enter session ID">
+<input type="submit" class="btn btn-primary" value="Get session">
+</div>
+</form>
+
 <div class="infobox" style="visibility: hidden;">
   <h3 class="title">Title</h3>
   <h4 class="author">Authors</h4>
@@ -30,8 +44,18 @@ text {
   <h5>Abstract:</h5>
   <p class="abstract">Abstract:</p>
 </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script>
+
+$("#btn1").click(function () {
+	var id = $('#sessionid').val()
+	$.ajax({url: "session?id=" + id,
+		dataType:"json",
+		success: function(result) {
+	  console.log(result)
+	}});
+});
 
 // http://blog.thomsonreuters.com/index.php/mobile-patent-suits-graphic-of-the-day/
 var links = [
@@ -81,6 +105,8 @@ links.forEach(function(link) {
   link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
   link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
 });
+
+console.log(nodes)
 
 var width = 960,
     height = 500;

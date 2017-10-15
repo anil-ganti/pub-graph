@@ -2,19 +2,74 @@
 
 var express = require('express');
 var app = express();
-var mongojs = require('mongojs');
-var db = mongojs('mongodb://localhost', ['contactlist']);
+var mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
+var db = mongoose.connect('mongodb://localhost/test');
+
+var sessionSchema = mongoose.Schema({
+  id: Number,
+  nodes: Array
+});
+var Session = mongoose.model('Session', sessionSchema)
+
+var documentSchema = mongoose.Schema({
+  id: Number,
+  citations: Number
+})
+var Document = mongoose.model('Document', documentSchema)
+
+var referenceSchema = mongoose.Schema({
+  target: Number,
+  source: Number
+});
+
+var Reference = mongoose.model('Reference', referenceSchema)
+
 var bodyParser = require('body-parser');
+var axios = require('axios');
+
+var ieee = axios.create({
+  baseURL: 'http://ieeexplore.ieee.org/rest/',
+  timeout: 3000,
+  headers: {'Referer': 'ieeexplore.ieee.org'}
+});
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 
-app.get('/contactlist', function (req, res) {
-  console.log('I received a GET request');
+//TODO: When to use params vs query?
+app.get('/citations', function(req, res) {
+  console.log(req.query)
+  var doc = req.query.document;
+  //var count = req.params.max
+  ieee.get('document/' + doc +'/citations?count=10')
+  .then(function(response) {
+    console.log(response.data.paperCitations.ieee);
+  })
+});
 
-  db.contactlist.find(function (err, docs) {
-    console.log(docs);
-    res.json(docs);
+app.get('/session', function(req, res) {
+  var session_id = req.query.id
+  console.log(session_id)
+  response = {}
+  Session.findOne({id: session_id},function(err, session) {
+    if (err) return console.error(err);
+  })
+  .then(function(session) {
+    console.log(session);
+    return Document.find({id: {$in: session.nodes}});
+  })
+  .then(function(nodes) {
+    response.nodes = nodes
+    console.log(nodes)
+    node_ids = nodes.map(function(x) { return x.id })
+    return Reference.find({source: {$in: node_ids}, target: {$in: node_ids}}, function(err, refs) {
+      if (err) return console.error(err);
+    })
+  })
+  .then(function(refs) {
+    response.refs = refs;
+    res.json(response)  
   });
 });
 
